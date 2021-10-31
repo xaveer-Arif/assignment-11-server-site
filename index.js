@@ -4,7 +4,7 @@ const app = express();
 const { MongoClient } = require('mongodb');
 const cors = require('cors')
 require('dotenv').config();
-// const ObjectId = require('mongodb').ObjectId
+const ObjectId = require('mongodb').ObjectId
 
 
 const port = 5000;
@@ -29,24 +29,47 @@ async function run(){
         app.get('/services', async(req, res) => {
             const cursor = serviceCollection.find({});
             const services = await cursor.toArray();
+            // console.log('get')
             res.json(services)
         })
-
-        /* // get single api using ObjectId and find
-        app.get('/services/:id', async(req,res) => {
+        // get api for order
+        app.get('/orders/:id', async(req, res) => {
+          const id = req.params.id
+            // console.log('get', id)
+            const myOrder = await serviceCollection.find({email: id}).toArray()
+            console.log(myOrder)
+            res.json(myOrder)
+        })
+        // get manage order
+        app.get('/manage/:id', async(req, res) => {
             const id = req.params.id;
-            const query = {_id: ObjectId(id)}
-            const singleService = await serviceCollection.findOne(query) 
-            // const service = await singleService.toArray()
-            console.log('service id', singleService)
-            res.json(singleService)
-        }) */
+            const manageOrder = await serviceCollection.find({status:"pending"}).toArray()
+            res.json(manageOrder)
+
+        })
+        // update
+        app.put('/update/:id' , async(req, res) => {
+            const id = req.params.id
+            // console.log(req.params.id)
+            const updateInfo = req.body;
+            console.log(updateInfo)
+            const filter = {_id: ObjectId(id)};
+            const updateService = await serviceCollection.updateOne(filter, {
+                $set:{
+                    email:updateInfo.email,
+                    status: "pending"
+                }
+            });
+            // console.log(updateService)
+            res.send(updateService)
+        })
+     
        
         // post api
         app.post('/services',async (req, res) => {
             const service = req.body;
-            const result = await serviceCollection.insertOne(service).toArray();
-            // console.log('hit the post', service)
+            const result = await serviceCollection.insertOne(service);
+            // console.log('hit the post')
             // res.json(result)
             res.json(result)
         })
@@ -70,50 +93,3 @@ app.listen(port, () => {
 
 
 //...........................................
-/*  const express = require('express')
-const app = express()
-const cors = require('cors')
-const { MongoClient } = require('mongodb');
-require('dotenv').config();
-
-const port = 5000;
-// middle ware
-app.use(cors())
-app.use(express.json())
-
-// connect to data base
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vea3q.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-console.log(uri)
-
-// function of post and get method 
-async function run(){
-    try{
-        await client.connect();
-        const database = client.db('My_Travel');
-        const serviceCollection = database.collection('services')
-        // post method
-        app.post('/services', async(req, res) => {
-            // const services = req.body;
-            // const services = await serviceCollection.insertOne(req.body); 
-            console.log('console log er ', req.body)
-            res.send('service')
-        })
-    }
-    finally{
-        // await client.close();
-    }
-}
-run().catch(console.dir)
-
-
-app.get('/', (req, res) => {
-    console.log('this is first command')
-    res.send('Hellow world')
-})
-
-app.listen(port , () => {
-    console.log('Running From ', port)
-})
-
- */
