@@ -56,6 +56,19 @@ async function run(){
             });
             res.send(updateService)
         })
+        // update
+        app.put('/updated/:id' , async(req, res) => {
+            const id = req.params.id
+            const updateInfo = req.body;
+            const filter = {_id: ObjectId(id)};
+            const updateService = await serviceCollection.updateOne(filter, {
+                $set:{
+                    
+                    status: "Accepted"
+                }
+            });
+            res.send(updateService)
+        })
     //  delete
     /* app.delete('/delete/:id', async(req, res) => {
         const id = req.params.id;
