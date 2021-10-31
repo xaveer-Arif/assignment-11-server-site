@@ -56,7 +56,14 @@ async function run(){
             });
             res.send(updateService)
         })
-     
+    //  delete
+    /* app.delete('/delete/:id', async(req, res) => {
+        const id = req.params.id;
+        const query = {_id: ObjectId(id)};
+        const result = await serviceCollection.deleteOne(query);
+        // console.log('deleted id', result)
+        res.json(result)
+    }) */
        
         // post api
         app.post('/services',async (req, res) => {
