@@ -46,16 +46,17 @@ async function run(){
         // get manage order
         app.get('/manage/:id', async(req, res) => {
             const id = req.params.id;
-            const manageOrder = await orderCollection.find({status:"pending"}).toArray()
+            // console.log(id)
+            const manageOrder = await orderCollection.find({email : id}).toArray()
             res.json(manageOrder)
 
         })
         // update
         app.put('/update/:id' , async(req, res) => {
             const id = req.params.id
-            console.log('id',id)
+            // console.log('id',id)
             const updateInfo = req.body;
-            console.log("updateInfo",updateInfo.email)
+            console.log("updateInfo",updateInfo.status)
             const filter = {_id: id};
             // console.log('filter', filter)
             const updateService = await orderCollection.updateOne(filter, {
@@ -64,28 +65,32 @@ async function run(){
                     status: "pending"
                 }
             });
-            console.log(updateService)
+            // console.log(updateService)
             res.send(updateService)
         })
         // update
-       /*  app.put('/updated/:id' , async(req, res) => {
+        app.put('/statusUpdate/:id' , async(req, res) => {
             const id = req.params.id
+            // console.log(id)
             const updateInfo = req.body;
-            const filter = {_id: ObjectId(id)};
-            const updateService = await serviceCollection.updateOne(filter, {
+            // console.log('update info',updateInfo.status)
+            const filter = {_id: id};
+            // console.log(filter)
+            
+            const updateService = await orderCollection.updateOne(filter, {
                 $set:{
-                    
-                    status: "Accepted"
+                    status : updateInfo.status
                 }
             });
+            // console.log(updateService)
             res.send(updateService)
-        }) */
+        })
     //  delete
     app.delete('/delete/:id', async(req, res) => {
         const id = req.params.id;
         const query = {_id: id};
         const result = await orderCollection.deleteOne(query);
-        console.log('deleted id', result)
+        // console.log('deleted id', result)
         res.json(result)
     })
        
@@ -99,7 +104,7 @@ async function run(){
         // post order
         app.post('/serviceOrder',async (req, res) => {
             const service = req.body;
-            console.log(service)
+            // console.log(service)
             const result = await orderCollection.insertOne(service);
            
             res.json(result)
