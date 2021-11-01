@@ -23,6 +23,7 @@ async function run(){
        
         const database = client.db('My_Travel');
         const serviceCollection = database.collection('services');
+        const orderCollection = database.collection('serviceOrder');
 
         // get api using find
         app.get('/services', async(req, res) => {
@@ -30,34 +31,44 @@ async function run(){
             const services = await cursor.toArray();
             res.json(services)
         })
+        // get api ServiceOrder
+        app.get('/serviceOrder', async(req, res) => {
+            const cursor = orderCollection.find({});
+            const services = await cursor.toArray();
+            res.json(services)
+        })
         // get api for order
-        app.get('/orders/:id', async(req, res) => {
+        app.get('/serviceOrder/:id', async(req, res) => {
           const id = req.params.id
-            const myOrder = await serviceCollection.find({email: id}).toArray()
+            const myOrder = await orderCollection.find({email: id}).toArray()
             res.json(myOrder)
         })
         // get manage order
         app.get('/manage/:id', async(req, res) => {
             const id = req.params.id;
-            const manageOrder = await serviceCollection.find({status:"pending"}).toArray()
+            const manageOrder = await orderCollection.find({status:"pending"}).toArray()
             res.json(manageOrder)
 
         })
         // update
         app.put('/update/:id' , async(req, res) => {
             const id = req.params.id
+            console.log('id',id)
             const updateInfo = req.body;
-            const filter = {_id: ObjectId(id)};
-            const updateService = await serviceCollection.updateOne(filter, {
+            console.log("updateInfo",updateInfo.email)
+            const filter = {_id: id};
+            // console.log('filter', filter)
+            const updateService = await orderCollection.updateOne(filter, {
                 $set:{
                     email:updateInfo.email,
                     status: "pending"
                 }
             });
+            console.log(updateService)
             res.send(updateService)
         })
         // update
-        app.put('/updated/:id' , async(req, res) => {
+       /*  app.put('/updated/:id' , async(req, res) => {
             const id = req.params.id
             const updateInfo = req.body;
             const filter = {_id: ObjectId(id)};
@@ -68,20 +79,28 @@ async function run(){
                 }
             });
             res.send(updateService)
-        })
+        }) */
     //  delete
-    /* app.delete('/delete/:id', async(req, res) => {
+    app.delete('/delete/:id', async(req, res) => {
         const id = req.params.id;
-        const query = {_id: ObjectId(id)};
-        const result = await serviceCollection.deleteOne(query);
-        // console.log('deleted id', result)
+        const query = {_id: id};
+        const result = await orderCollection.deleteOne(query);
+        console.log('deleted id', result)
         res.json(result)
-    }) */
+    })
        
         // post api
         app.post('/services',async (req, res) => {
             const service = req.body;
             const result = await serviceCollection.insertOne(service);
+           
+            res.json(result)
+        })
+        // post order
+        app.post('/serviceOrder',async (req, res) => {
+            const service = req.body;
+            console.log(service)
+            const result = await orderCollection.insertOne(service);
            
             res.json(result)
         })
