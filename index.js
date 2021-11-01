@@ -44,12 +44,12 @@ async function run(){
             res.json(myOrder)
         })
         // get manage order
-        app.get('/manage/:id', async(req, res) => {
+       /*  app.get('/manage/:id', async(req, res) => {
             const id = req.params.id;
             const manageOrder = await orderCollection.find({email : id}).toArray()
             res.json(manageOrder)
 
-        })
+        }) */
         // update
         app.put('/update/:id' , async(req, res) => {
             const id = req.params.id
